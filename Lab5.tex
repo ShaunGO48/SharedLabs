@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage{graphicx} % new way of doing eps files
+\usepackage{listings} % nice code layout
+\usepackage[usenames]{color} % color
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{graphgray}{gray}{0.7}
+\definecolor{ans}{rgb}{1,0,0}
+\definecolor{blue}{rgb}{0,0,1}
+% \Verilog{title}{label}{file}
+\newcommand{\Verilog}[3]{
+  \lstset{language=Verilog}
+  \lstset{backgroundcolor=\color{listinggray},rulecolor=\color{blue}}
+  \lstset{linewidth=\textwidth}
+  \lstset{commentstyle=\textit, stringstyle=\upshape,showspaces=false}
+  \lstset{frame=tb}
+  \lstinputlisting[caption={#1},label={#2}]{#3}
+}
+
+
+\author{Sam Sahli and Shaun Gordon}
+\title{Lab 5}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+The purpose of this lab was to build the first two modules in the decode stage of the MIPS computer. The first was a sign extender and the second was a control unit. The sign extender is responsible for extending a 16-bit number to a 32-bit number while maintaining its sign (positive of negative). The control unit is responsible for interpreting the opcode and setting the control bits in the computer. Verilog code to construct both modules was written and a test benches for each were also created to test their function. Both of these modules, after being tested for correct operation, will later be included in the final decode stage code.    
+
+\section{Interface}
+The sign extender consists of one input and one output. The input is 16 bits and the output is 32. The 16th bit of the input is replicated 16 times and concatenated onto the original 16 bits. So the output is the original 16 bits in bit positions 15-0, and the bit from position 15 is placed in bit positions 32-16. 
+
+The control unit has one 6 bit input and eight outputs. These eight outputs are the computer control bits. The 6 input bits, or the opcode, is interpreted and used to set the control bits. So the control unit module must take the opcode and use it to correctly assign values to each of the outputs. 
+
+\section{Design}
+The design of the sign extender is fairly basic as only one function needs to be executed. Its only purpose is to turn a 16 bit value into a 32 bit value while maintaining its sign and value. It is required to do this for both positive and negative values. So a module must be built to make a new 16 bit number and concatenate that new number onto the original 16 bit number, and output that value. 
+
+The design of the control unit is slightly more complicated. The control needs to be built to recognize the value of the opcode input and then set correct output values. Code will be written to read the input and set different outputs based on that input. The control unit must also be built with a default setting that will generate an output without meaningful opcode input. This default output must be designed to not make any changes to the computers control bits. 
+
+\section{Implementation}
+As mentioned in the interface section, the sign extender was designed with a single input and output. For the MIPS computer the input must be 16 bits and the output 32, but these values are not universal. Because of this, the code was designed to be easily modified. This was done by referencing the value WORD in the Verilog header file. WORD is currently set to 32, but can be changed with one edit in the header file. The input is set to be half of WORD, 16 bits, and the output is set to be WORD, 32 bits. The following assign statement takes the original 16 bit input and concatenates 16 more bits into the higher bit positions. These new bits are determined by the 16th bit of the input. By taking the 16th bit, copying it 16 times, and placing it on the front of the input, the sign and value of the input is maintained. So if the input is negative a 1 will be placed in bit positions 32-15 and if the input is positive a 0 will be placed in bit positions 32-15. This agrees with the practice of a negative being represented with a twos-complement. This code for the sign extender can be seen in Listing~\ref{code:sign_ext}.
+
+The control unit is created with one input, named Opcode, and 8 outputs that represent the different control bits of the computer. The input is used to determine the value each output is set to. This is implemented with a case statement. The case statement takes the value assigned to input Opcode and if that value matches with a MIPS command's opcode the outputs are assigned accordingly. Four commands are included in the code shown in Listing~\ref{code:control}. Each case has its own outputs, and these outputs will be used to execute the command indicated by the opcode. This is why the code was implemented with a case statement.
+
+\Verilog{Verilog code for implementing a sign extender.}{code:sign_ext}{H:/MIPS-Lab/code/2_decode/sign_extender.v}
+
+\Verilog{Verilog code for implementing a control unit.}{code:control}{H:/MIPS-Lab/code/2_decode/control.v}
+
+\section{Test Bench Design}
+The test bench for the sign extender was designed to confirm the sign of a number is extended from 16 to 32 bits for different input values. Low and high values are tested to determine whether the 16th bit of the input is copied 16 times and placed on the front of the output. The tests confirm this operation for both negative and positive input values. The sign extender test bench code is displayed in Listing~\ref{code:sign_ext_test}.
+
+The test bench for the control unit needs to confirm that for a specific value of the opcode, the control bits are set to their correct values. This is done by testing known opcode values, and confirming that the outputs are correct for that known input. The test bench also includes random values for the input to make sure the default case works. This test bench code is displayed in Listing~\ref{code:control_test}.
+
+\Verilog{Verilog code for testing a sign extender.}{code:sign_ext_test}{H:/MIPS-Lab/code/2_decode/sign_extender_test.v}
+
+\Verilog{Verilog code for testing a control unit.}{code:control_test}{H:/MIPS-Lab/code/2_decode/control_test.v}
+
+\section{Simulation}
+The timing diagram for the sign extender simulation is shown in Figure~\ref{fig:signExt_test}. Four inputs are shown, and for each value the 16th bit is copied 16 times, and placed into bit locations 32-16. This waveform confirms the operation of the sign extender.
+
+The timing diagram for the control unit is displayed in Figure~\ref{fig:control_test}. The opcode for the four desired MIPS commands were each tested, and this waveform shows that the desired control bits are set on the output. This waveform also sets all of the control bits to zero in the default case. This proves that for random values of the input, no changes are made to the control bits. The output for known and random values of the opcode confirms the operation of the control unit. 
+
+\begin{figure}
+\begin{center}
+\caption{Timing diagram for the sign extender test.}\label{fig:signExt_test}
+\includegraphics[width=0.9\textwidth]{H:/ELC-3338/Lab_5/sign_ext_test.PNG}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\caption{Timing diagram for the control unit test.}\label{fig:control_test}
+\includegraphics[width=0.9\textwidth]{H:/ELC-3338/Lab_5/control_test.PNG}
+\end{center}
+\end{figure}
+
+\section{Conclusions}
+The purpose of this lab was to generate, test, and confirm the code for the first two modules of the decode stage of the MIPS computer. The sign extender is required to sign extend inputs without altering their value. This extended value is then output from the decode stage and used in the execute stage. The control unit interprets the opcode and sets the computers control bits. These bits are used in the execute stage as well. So this lab generated two modules that are integral to the decode stage, as they produce values that are used in other stages of the computer. 
+\end{document} 
