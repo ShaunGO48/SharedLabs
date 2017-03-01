@@ -1,0 +1,61 @@
+\documentclass{article}
+\usepackage{graphicx} % new way of doing eps files
+\usepackage{listings} % nice code layout
+\usepackage[usenames]{color} % color
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{graphgray}{gray}{0.7}
+\definecolor{ans}{rgb}{1,0,0}
+\definecolor{blue}{rgb}{0,0,1}
+% \Verilog{title}{label}{file}
+\newcommand{\Verilog}[3]{
+  \lstset{language=Verilog}
+  \lstset{backgroundcolor=\color{listinggray},rulecolor=\color{blue}}
+  \lstset{linewidth=\textwidth}
+  \lstset{commentstyle=\textit, stringstyle=\upshape,showspaces=false}
+  \lstset{frame=tb}
+  \lstinputlisting[caption={#1},label={#2}]{#3}
+}
+
+
+\author{Sam Sahli and Shaun Gordon}
+\title{Lab 6: Register File }
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+The purpose of this lab was to begin one of the last two modules in the decode stage of the MIPS computer. The module focused on in this lab is the register file. This register file can read and write from a single register. .
+
+\section{Interface}
+The register file consists of four inputs, three controls, and two outputs. 
+
+\section{Design}
+
+
+\section{Implementation}
+
+ code is in Listing~\ref{code:regfile} on page~\pageref{code:regfile}. 
+
+\Verilog{Verilog code for implementing a register.}{code:regfile}{C:/Users/Gordons/Desktop/Lab6/regfile_test.v}
+
+\section{Test Bench Design}
+
+Verilog code of the testbench is in Listing~\ref{code:regfiletest} on page~\pageref{code:regfiletest}.
+
+\Verilog{Verilog code for testing a register.}{code:regfiletest}{C:/Users/Gordons/Desktop/Lab6/regfile_test.v}
+
+\section{Simulation}
+
+  A sample timing diagram is in Figure~\ref{fig:regtest} on page~\pageref{fig:regtest}.
+
+\begin{figure}
+\begin{center}
+\caption{Timing diagram for the register test.}\label{fig:regtest}
+\includegraphics[width=0.9\textwidth]{../images/registertiming.png}
+\end{center}
+\end{figure}
+
+\section{Conclusions}
+
+
+\end{document} 
